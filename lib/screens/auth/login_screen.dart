@@ -28,12 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Instagram Clone',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Image.asset(
+                  'assets/images/instagram_logo.png',
+                  height: 50,
                 ),
                 const SizedBox(height: 32),
                 TextFormField(

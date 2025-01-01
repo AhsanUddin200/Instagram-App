@@ -16,10 +16,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Instagram Clone',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.grey,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: const LoginScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

@@ -51,11 +51,11 @@ class _PostScreenState extends State<PostScreen> {
           .collection('users')
           .doc(user.uid)
           .get();
-      
+
       if (!userDoc.exists) {
         throw Exception('User data not found');
       }
-      
+
       final username = userDoc.data()?['username'] ?? 'Anonymous';
       String? imageUrl;
 
@@ -65,13 +65,13 @@ class _PostScreenState extends State<PostScreen> {
           final storageRef = FirebaseStorage.instance
               .ref()
               .child('posts/${DateTime.now().millisecondsSinceEpoch}.jpg');
-          
+
           // Upload file
           final uploadTask = await storageRef.putFile(_image!);
           if (uploadTask.state == TaskState.error) {
             throw Exception('Failed to upload image');
           }
-          
+
           // Get URL
           imageUrl = await storageRef.getDownloadURL();
         } catch (e) {
@@ -82,7 +82,7 @@ class _PostScreenState extends State<PostScreen> {
 
       // Create post document
       final postRef = FirebaseFirestore.instance.collection('posts').doc();
-      
+
       await postRef.set({
         'id': postRef.id,
         'userId': user.uid,
@@ -95,21 +95,15 @@ class _PostScreenState extends State<PostScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Post created successfully!')),
-        );
+        setState(() => _isLoading = false);
         Navigator.pop(context);
       }
     } catch (e) {
-      print('Error creating post: $e'); // Debug print
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating post: ${e.toString()}')),
-        );
-      }
-    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating post: $e')),
+        );
       }
     }
   }

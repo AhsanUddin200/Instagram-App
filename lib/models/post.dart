@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Post {
   final String id;
   final String userId;
   final String username;
-  final String imageUrl;
+  final String? imageUrl;
   final String caption;
   final DateTime timestamp;
   final List<String> likes;
@@ -12,7 +14,7 @@ class Post {
     required this.id,
     required this.userId,
     required this.username,
-    required this.imageUrl,
+    this.imageUrl,
     required this.caption,
     required this.timestamp,
     required this.likes,
@@ -25,23 +27,36 @@ class Post {
         'username': username,
         'imageUrl': imageUrl,
         'caption': caption,
-        'timestamp': timestamp.toIso8601String(),
+        'timestamp': FieldValue.serverTimestamp(),
         'likes': likes,
         'comments': comments.map((comment) => comment.toJson()).toList(),
       };
 
-  static Post fromJson(Map<String, dynamic> json) => Post(
-        id: json['id'],
-        userId: json['userId'],
-        username: json['username'],
-        imageUrl: json['imageUrl'],
-        caption: json['caption'],
-        timestamp: DateTime.parse(json['timestamp']),
-        likes: List<String>.from(json['likes']),
-        comments: (json['comments'] as List)
-            .map((comment) => Comment.fromJson(comment))
-            .toList(),
-      );
+  static Post fromJson(Map<String, dynamic> json) {
+    var timestamp = json['timestamp'];
+    DateTime dateTime;
+
+    if (timestamp is Timestamp) {
+      dateTime = timestamp.toDate();
+    } else if (timestamp is String) {
+      dateTime = DateTime.parse(timestamp);
+    } else {
+      dateTime = DateTime.now();
+    }
+
+    return Post(
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      username: json['username'] ?? '',
+      imageUrl: json['imageUrl'],
+      caption: json['caption'] ?? '',
+      timestamp: dateTime,
+      likes: List<String>.from(json['likes'] ?? []),
+      comments: (json['comments'] as List? ?? [])
+          .map((comment) => Comment.fromJson(comment))
+          .toList(),
+    );
+  }
 }
 
 class Comment {
@@ -64,14 +79,27 @@ class Comment {
         'userId': userId,
         'username': username,
         'text': text,
-        'timestamp': timestamp.toIso8601String(),
+        'timestamp': FieldValue.serverTimestamp(),
       };
 
-  static Comment fromJson(Map<String, dynamic> json) => Comment(
-        id: json['id'],
-        userId: json['userId'],
-        username: json['username'],
-        text: json['text'],
-        timestamp: DateTime.parse(json['timestamp']),
-      );
-} 
+  static Comment fromJson(Map<String, dynamic> json) {
+    var timestamp = json['timestamp'];
+    DateTime dateTime;
+
+    if (timestamp is Timestamp) {
+      dateTime = timestamp.toDate();
+    } else if (timestamp is String) {
+      dateTime = DateTime.parse(timestamp);
+    } else {
+      dateTime = DateTime.now();
+    }
+
+    return Comment(
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      username: json['username'] ?? '',
+      text: json['text'] ?? '',
+      timestamp: dateTime,
+    );
+  }
+}

@@ -24,7 +24,14 @@ class AuthService {
           username: username,
         );
 
-        await _firestore.collection('users').doc(user.uid).set(user.toJson());
+        await _firestore.collection('users').doc(user.uid).set({
+          'uid': userCredential.user!.uid,
+          'email': email,
+          'username': username.toLowerCase(),
+          'followers': [],
+          'following': [],
+          'profileImageUrl': null,
+        });
         return user;
       }
     } catch (e) {
